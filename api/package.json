@@ -9,7 +9,7 @@
     "start": "nodemon index.js"
   },
   "imports": {
-    "#backend/*.js": "./*.js"
+    "#api/*.js": "./*.js"
   },
   "author": "",
   "license": "ISC",
