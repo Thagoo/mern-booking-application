@@ -17,11 +17,7 @@ export const userInputs = [
     type: "text",
     placeholder: "+91 934 567 89",
   },
-  {
-    id: "password",
-    label: "Password",
-    type: "password",
-  },
+
   {
     id: "country",
     label: "Country",

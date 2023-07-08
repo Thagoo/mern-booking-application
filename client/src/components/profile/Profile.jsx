@@ -1,4 +1,3 @@
-import "./Profile.scss";
 import DriveFolderUploadOutlinedIcon from "@mui/icons-material/DriveFolderUploadOutlined";
 import { useContext, useEffect, useState } from "react";
 import axios from "axios";
@@ -105,6 +104,11 @@ const Profile = () => {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.clear();
+    window.location.reload();
+  };
+
   useEffect(() => {
     const data = watch();
     const hasChanges = Object.keys(data).some(
@@ -169,6 +173,9 @@ const Profile = () => {
                 variant="contained"
               >
                 Update
+              </Button>
+              <Button onClick={handleLogout} fullWidth variant="outlined">
+                Logout
               </Button>
             </form>
           </div>
