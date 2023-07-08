@@ -6,13 +6,21 @@ import { createError } from "#api/utils/error.js";
 
 export const register = async (req, res, next) => {
   try {
+    const existingUser = await User.findOne({ username: req.body.username });
+    if (existingUser) {
+      return next(createError(400, "Username exists try different"));
+    }
+    const existingEmail = await User.findOne({ email: req.body.email });
+    if (existingEmail) {
+      return next(createError(400, "Email already exists"));
+    }
     const salt = bcrypt.genSaltSync(10);
     const hash = bcrypt.hashSync(req.body.password, salt);
 
     const newUser = new User({
-      username: req.body.username,
-      email: req.body.email,
+      ...req.body,
       password: hash,
+      isAdmin: req.body.isAdmin || false,
     });
     await newUser.save();
     res.status(200).send("User has been created");
@@ -23,7 +31,7 @@ export const register = async (req, res, next) => {
 
 export const login = async (req, res, next) => {
   try {
-    const user = await User.findOne({ username: req.body.username });
+    const user = await User.findOne({ email: req.body.email });
     if (!user) return next(createError(404, "User not found"));
 
     const isPasswordMatches = await bcrypt.compare(
@@ -43,7 +51,7 @@ export const login = async (req, res, next) => {
     res
       .cookie("access_token", token, { httpOnly: true })
       .status(200)
-      .json({ ...otherDetails });
+      .json({ details: { ...otherDetails, isAdmin } });
   } catch (err) {
     next(err);
   }
