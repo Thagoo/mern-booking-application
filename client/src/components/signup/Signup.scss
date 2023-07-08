@@ -1,0 +1,85 @@
+.new {
+  width: 100%;
+  display: flex;
+
+  .newContainer {
+    flex: 6;
+
+    .top {
+      justify-content: center;
+    }
+    .top,
+    .bottom {
+      -webkit-box-shadow: 2px 4px 10px 1px rgba(0, 0, 0, 0.47);
+      box-shadow: 2px 4px 10px 1px rgba(201, 201, 201, 0.47);
+      padding: 10px;
+      margin: 20px ;
+      display: flex;
+
+      .sidebar {
+        background-image: url(https://source.unsplash.com/random/?city,night);
+        background-repeat: "no-repeat";
+        background-size: "cover";
+        background-position: "center";
+        flex: 1;
+        border-radius: 10px;
+        
+      }
+
+      h1 {
+        color: #003580;
+        font-size: 20px;
+     
+      }
+
+      .left {
+        flex: 1;
+        text-align: center;
+
+        img {
+          width: 100px;
+          height: 100px;
+          border-radius: 50%;
+          object-fit: cover;
+        }
+      }
+
+      .right {
+        flex: 2;
+        padding: 0px 20px;
+
+        form {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 30px;
+          justify-content: space-between;
+
+          .formInput {
+            width: 40%;
+
+            label {
+              display: flex;
+              align-items: center;
+              gap: 10px;
+
+              .icon {
+                cursor: pointer;
+              }
+            }
+
+          
+          }
+
+          button {
+            padding: 10px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+          }
+        }
+      }
+    }
+  }
+}
+
