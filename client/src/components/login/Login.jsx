@@ -25,7 +25,6 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { AuthContext } from "../../context/AuthContext";
-import Navbar from "../navbar/Navbar";
 
 const schema = yup.object({
   email: yup
@@ -100,10 +99,9 @@ function Login({ setAuthenticated, setUserDetails }) {
 
   return (
     <>
-      <Navbar />
       <Backdrop
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={isLoading}
+        open={loading}
       >
         <CircularProgress color="inherit" />
       </Backdrop>
@@ -119,11 +117,12 @@ function Login({ setAuthenticated, setUserDetails }) {
               alignItems: `center`,
             }}
           >
+            {" "}
             {snackbar}
-            <Avatar sx={{ bgcolor: "primary" }}>
-              <LockOutlinedIcon />
-            </Avatar>
-            <Typography sx={{ fontSize: `4vh` }}>Sign In</Typography>
+            <img className="logo" src="images/bookease.png" alt="" />
+            <Typography mt={2} sx={{ fontSize: `4vh` }}>
+              Sign In
+            </Typography>
             <Box component="form" onSubmit={handleSubmit(onSubmit)}>
               <TextField
                 sx={{ mt: 4 }}
@@ -160,22 +159,47 @@ function Login({ setAuthenticated, setUserDetails }) {
                 }}
                 autoFocus
               />
-
-              <Button
-                disabled={loading}
-                type="submit"
-                fullWidth
-                variant="contained"
-                sx={{ mt: 4, mb: 1 }}
-              >
-                Sign In
-              </Button>
-              <Grid container>
+              <Link to="/signup">
+                <Button
+                  disabled={loading}
+                  type="submit"
+                  sx={{
+                    boxShadow: `none`,
+                    textTransform: `none`,
+                  }}
+                >
+                  Forgot Password
+                </Button>
+              </Link>
+              <Grid container mt={4}>
                 <Grid item xs>
-                  <Link>Forgot password?</Link>
+                  <Link to="/signup">
+                    <Button
+                      disabled={loading}
+                      type="submit"
+                      sx={{
+                        boxShadow: `none`,
+                        textTransform: `none`,
+                      }}
+                    >
+                      Create Account
+                    </Button>
+                  </Link>
                 </Grid>
-                <Grid item xs>
-                  <Link to="/signup">Don't have an account? SignUp</Link>
+                <Grid item xs sx={{ textAlign: `right` }}>
+                  <Button
+                    disabled={loading}
+                    type="submit"
+                    variant="contained"
+                    sx={{
+                      boxShadow: `none`,
+                      backgroundColor: `#1a73e8`,
+                      textTransform: `none`,
+                      px: 3,
+                    }}
+                  >
+                    Login
+                  </Button>
                 </Grid>
               </Grid>
             </Box>

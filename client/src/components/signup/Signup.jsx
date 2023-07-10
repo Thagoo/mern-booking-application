@@ -5,8 +5,8 @@ import axios from "axios";
 import { AuthContext } from "../../context/AuthContext";
 import { userInputs } from "./formInput";
 import { Avatar, Button, Grid } from "@mui/material";
-import Navbar from "../navbar/Navbar";
-import { useNavigate } from "react-router-dom";
+
+import { useNavigate, Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -110,7 +110,6 @@ const Signup = () => {
   return (
     <div className="new">
       <div className="newContainer">
-        <Navbar />
         <div className="top">
           <h1>Signup</h1>
         </div>
@@ -156,9 +155,39 @@ const Signup = () => {
                 </div>
               ))}
 
-              <Button fullWidth type="submit" variant="contained">
-                Submit
-              </Button>
+              <Grid container>
+                <Grid xs item>
+                  <Link to={"/login"}>
+                    <Button
+                      variant="outlined"
+                      sx={{
+                        boxShadow: `none`,
+                        border: `none !important`,
+                        textTransform: `none`,
+                        px: 3,
+                      }}
+                    >
+                      already have an account? Login
+                    </Button>
+                  </Link>
+                </Grid>
+                <Grid item xs sx={{ textAlign: `right` }}>
+                  {" "}
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    onClick={handleClick}
+                    sx={{
+                      boxShadow: `none`,
+                      backgroundColor: `#1a73e8`,
+                      textTransform: `none`,
+                      px: 3,
+                    }}
+                  >
+                    Submit
+                  </Button>
+                </Grid>
+              </Grid>
             </form>
           </div>
         </div>

@@ -1,5 +1,5 @@
 import "./list.css";
-import Navbar from "../../components/navbar/Navbar";
+
 import Header from "../../components/header/Header";
 import { useLocation } from "react-router-dom";
 import { useState } from "react";
@@ -7,6 +7,7 @@ import { format } from "date-fns";
 import { DateRange } from "react-date-range";
 import SearchItem from "../../components/searchItem/SearchItem";
 import useFetch from "../../components/hooks/useFetch";
+import { Backdrop, CircularProgress } from "@mui/material";
 
 const List = () => {
   const location = useLocation();
@@ -18,14 +19,13 @@ const List = () => {
   const [max, setMax] = useState(undefined);
 
   const { data, loading, error, reFetch } = useFetch(
-    `/hotels?city=${destination}&min=${min || 0}&max=${max || 99999}`
+    `/hotels?city=${destination}&min=${min || 0}&max=${max || 9999999}`
   );
   const handleClick = () => {
     reFetch();
   };
   return (
     <div>
-      <Navbar />
       <Header type="list" />
       <div className="listContainer">
         <div className="listWrapper">
@@ -33,7 +33,11 @@ const List = () => {
             <h1 className="lsTitle">Search</h1>
             <div className="lsItem">
               <label>Destination</label>
-              <input placeholder={destination} type="text" />
+              <input
+                placeholder={destination}
+                type="text"
+                onChange={(e) => setDestination(e.target.value)}
+              />
             </div>
             <div className="lsItem">
               <label>Check-in Date</label>
@@ -68,6 +72,7 @@ const List = () => {
                   </span>
                   <input
                     type="number"
+                    min={9999}
                     onChange={(e) => setMax(e.target.value)}
                     className="lsOptionInput"
                   />
@@ -105,7 +110,15 @@ const List = () => {
           </div>
           <div className="listResult">
             {loading ? (
-              "loading"
+              <Backdrop
+                sx={{
+                  color: "#fff",
+                  zIndex: (theme) => theme.zIndex.drawer + 1,
+                }}
+                open={loading}
+              >
+                <CircularProgress color="inherit" />
+              </Backdrop>
             ) : (
               <>
                 {data.map((item) => (

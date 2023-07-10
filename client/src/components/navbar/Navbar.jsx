@@ -10,8 +10,10 @@ const Navbar = () => {
   return (
     <div className="navbar">
       <div className="navContainer">
-        <Link to={"/"} className="logo">
-          <span>MERN STAY</span>
+        <Link to={"/"}>
+          <span>
+            <img className="logo-nav" src="images/bookease.svg" alt="" />
+          </span>
         </Link>
 
         <div className="navItems">

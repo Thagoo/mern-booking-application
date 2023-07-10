@@ -7,6 +7,7 @@ import Signup from "./components/signup/Signup";
 import Profile from "./components/profile/Profile";
 import { useContext } from "react";
 import { AuthContext } from "./context/AuthContext";
+import Navbar from "./components/navbar/Navbar";
 
 function App() {
   const ProtectedRoute = ({ children }) => {
@@ -19,48 +20,14 @@ function App() {
   };
   return (
     <BrowserRouter>
+      <Navbar />
       <Routes>
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute>
-              <Home />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/hotels"
-          element={
-            <ProtectedRoute>
-              <List />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/hotels/:id"
-          element={
-            <ProtectedRoute>
-              <Hotel />
-            </ProtectedRoute>
-          }
-        />
+        <Route path="/" element={<Home />} />
+        <Route path="/hotels" element={<List />} />
+        <Route path="/hotels/:id" element={<Hotel />} />
         <Route path="/login" element={<Login />} />
-        <Route
-          path="/signup"
-          element={
-            <ProtectedRoute>
-              <Signup />{" "}
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/profile"
-          element={
-            <ProtectedRoute>
-              <Profile />{" "}
-            </ProtectedRoute>
-          }
-        />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/profile" element={<Profile />} />
       </Routes>
     </BrowserRouter>
   );

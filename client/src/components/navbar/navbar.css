@@ -14,13 +14,12 @@
   justify-content: space-between;
 }
 
+.logo-nav {
+  height: 35px;
+}
+
 .logo {
-  border: white solid 1px;
-  border-radius: 4px;
-  padding: 10px;
-  font-weight: 600;
-  text-decoration: none;
-  color: aliceblue;
+  height: 40px;
 }
 
 .navButton {

@@ -4,12 +4,13 @@ import axios from "axios";
 import { AuthContext } from "../../context/AuthContext";
 import { userInputs } from "./formInput";
 import { Avatar, Button, Grid } from "@mui/material";
-import Navbar from "../navbar/Navbar";
+
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { TextField } from "@mui/material";
+import { Backdrop, CircularProgress } from "@mui/material";
 
 const schema = yup.object({
   username: yup
@@ -54,6 +55,7 @@ const Profile = () => {
   const [info, setInfo] = useState({});
   const [initialInfo, setInitialInfo] = useState({});
   const [submitDisabled, setSubmitDisabled] = useState(true);
+  const [loading, setLoading] = useState(false);
   const inputs = userInputs;
 
   const { user, dispatch } = useContext(AuthContext);
@@ -68,25 +70,30 @@ const Profile = () => {
 
   const navigate = useNavigate();
 
-  const handleClick = async (data) => {
+  const handleClick = async () => {
+    setLoading(true);
+    const data = watch();
     const imgdata = new FormData();
     imgdata.append("file", file);
     imgdata.append("upload_preset", "upload");
+    let url;
     try {
-      const uploadRes = await axios.post(
-        "https://api.cloudinary.com/v1_1/dzkxdyunu/image/upload",
-        imgdata
-      );
-      const { url } = uploadRes.data;
-      const newUser = {
-        ...data,
-        img: url,
-      };
+      if (file) {
+        const uploadRes = await axios.post(
+          "https://api.cloudinary.com/v1_1/dzkxdyunu/image/upload",
+          imgdata
+        );
+        const { url } = uploadRes.data;
+        data.img = url;
+      }
 
-      const response = await axios.put(`/users/${user._id}`, newUser);
-      //   dispatch({ type: "LOGIN_SUCCESS", payload: response.data });
+      console.log(data);
+      const response = await axios.put(`/users/${user._id}`, data);
+      setLoading(false);
+      dispatch({ type: "LOGIN_SUCCESS", payload: response.data });
       //   navigate("/login");
     } catch (error) {
+      setLoading(false);
       if (
         error.response.data.errorMessage === "Username exists try different"
       ) {
@@ -107,11 +114,13 @@ const Profile = () => {
   const handleLogout = () => {
     localStorage.clear();
     window.location.reload();
+    navigate("/");
   };
 
   useEffect(() => {
+    console.log("test", initialInfo);
     const data = watch();
-    const hasChanges = Object.keys(data).some(
+    const hasChanges = Object.keys(initialInfo).some(
       (key) => data[key] !== initialInfo[key]
     );
 
@@ -125,8 +134,16 @@ const Profile = () => {
 
   return (
     <div className="new">
+      <Backdrop
+        sx={{
+          color: "#fff",
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+        }}
+        open={loading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
       <div className="newContainer">
-        <Navbar />
         <div className="top">
           <h1>Profile</h1>
         </div>
@@ -144,7 +161,10 @@ const Profile = () => {
                 <input
                   type="file"
                   id="file"
-                  onChange={(e) => setFile(e.target.files[0])}
+                  onChange={(e) => {
+                    setFile(e.target.files[0]);
+                    setInitialInfo((prev) => ({ ...prev, img: file }));
+                  }}
                   style={{ display: "none" }}
                 />
               </div>
@@ -166,17 +186,39 @@ const Profile = () => {
                 </div>
               ))}
 
-              <Button
-                fullWidth
-                disabled={submitDisabled}
-                type="submit"
-                variant="contained"
-              >
-                Update
-              </Button>
-              <Button onClick={handleLogout} fullWidth variant="outlined">
-                Logout
-              </Button>
+              <Grid container>
+                <Grid xs item>
+                  <Button
+                    onClick={handleLogout}
+                    variant="outlined"
+                    sx={{
+                      boxShadow: `none`,
+                      border: `none !important`,
+                      textTransform: `none`,
+                      px: 3,
+                    }}
+                  >
+                    Logout
+                  </Button>
+                </Grid>
+                <Grid item xs sx={{ textAlign: `right` }}>
+                  {" "}
+                  <Button
+                    disabled={submitDisabled}
+                    type="submit"
+                    variant="contained"
+                    onClick={handleClick}
+                    sx={{
+                      boxShadow: `none`,
+                      backgroundColor: `#1a73e8`,
+                      textTransform: `none`,
+                      px: 3,
+                    }}
+                  >
+                    Update
+                  </Button>
+                </Grid>
+              </Grid>
             </form>
           </div>
         </div>
