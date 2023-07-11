@@ -36,7 +36,7 @@ function App() {
               index
               element={
                 <ProtectedRoute>
-                  <Profile inputs={profileInputs} />
+                  <Profile inputs={userInputs} />
                 </ProtectedRoute>
               }
             />

@@ -22,11 +22,7 @@ export const userInputs = [
     type: "text",
     placeholder: "+91 934 567 89",
   },
-  {
-    id: "password",
-    label: "Password",
-    type: "password",
-  },
+
   {
     id: "country",
     label: "Country",
@@ -38,47 +34,6 @@ export const userInputs = [
     label: "City",
     type: "text",
     placeholder: "Bengaluru",
-  },
-];
-
-export const profileInputs = [
-  {
-    img: users?.img,
-  },
-  {
-    id: "username",
-    label: "Username",
-    type: "text",
-    placeholder: users?.username,
-  },
-  {
-    id: "email",
-    label: "Email",
-    type: "email",
-    placeholder: users?.email,
-  },
-  {
-    id: "phone",
-    label: "Phone",
-    type: "text",
-    placeholder: users?.phone,
-  },
-  {
-    id: "password",
-    label: "Password",
-    type: users?.password,
-  },
-  {
-    id: "country",
-    label: "Country",
-    type: "text",
-    placeholder: users?.country,
-  },
-  {
-    id: "city",
-    label: "City",
-    type: "text",
-    placeholder: users?.city,
   },
 ];
 

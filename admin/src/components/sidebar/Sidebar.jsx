@@ -14,14 +14,21 @@ import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined
 import { Link } from "react-router-dom";
 import { DarkModeContext } from "../../context/darkModeContext";
 import { useContext } from "react";
+import { AuthContext } from "../../context/AuthContext";
 
 const Sidebar = () => {
   const { dispatch } = useContext(DarkModeContext);
+
+  const handleLogout = () => {
+    localStorage.clear();
+    window.location.reload();
+  };
+
   return (
     <div className="sidebar">
       <div className="top">
         <Link to="/" style={{ textDecoration: "none" }}>
-          <span className="logo">mernstay Admin</span>
+          <img className="logo" src="images/bookease.svg" alt="" />
         </Link>
       </div>
       <hr />
@@ -85,7 +92,7 @@ const Sidebar = () => {
             </li>
           </Link>
 
-          <li>
+          <li onClick={handleLogout}>
             <ExitToAppIcon className="icon" />
             <span>Logout</span>
           </li>

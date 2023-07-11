@@ -1,7 +1,9 @@
 .datatable {
   height: 600px;
   padding: 20px;
-  
+  .cap {
+    text-transform:capitalize;
+  }
   .datatableTitle{
     width: 100%;
     font-size: 24px;
@@ -75,4 +77,7 @@
       cursor: pointer;
     }
   }
+}
+.MuiDataGrid-cell:focus {
+  outline: none !important;
 }
