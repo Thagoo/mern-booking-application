@@ -1,10 +1,10 @@
 import DriveFolderUploadOutlinedIcon from "@mui/icons-material/DriveFolderUploadOutlined";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { AuthContext } from "../../context/AuthContext";
 import { userInputs } from "./formInput";
-import { Avatar, Button, Grid } from "@mui/material";
-
+import { Avatar, Button, Grid, IconButton } from "@mui/material";
+import "./Profile.scss";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -57,6 +57,7 @@ const Profile = () => {
   const [submitDisabled, setSubmitDisabled] = useState(true);
   const [loading, setLoading] = useState(false);
   const inputs = userInputs;
+  const inputFile = useRef(null);
 
   const { user, dispatch } = useContext(AuthContext);
 
@@ -87,7 +88,6 @@ const Profile = () => {
         data.img = url;
       }
 
-      console.log(data);
       const response = await axios.put(`/users/${user._id}`, data);
       setLoading(false);
       dispatch({ type: "LOGIN_SUCCESS", payload: response.data });
@@ -114,7 +114,6 @@ const Profile = () => {
   const handleLogout = () => {
     localStorage.clear();
     window.location.reload();
-    navigate("/");
   };
 
   useEffect(() => {
@@ -148,27 +147,26 @@ const Profile = () => {
           <h1>Profile</h1>
         </div>
         <div className="bottom">
-          <div className="sidebar" />
           <div className="left">
-            <img src={file ? URL.createObjectURL(file) : user.img} alt="" />
+            <img
+              onClick={() => inputFile.current.click()}
+              src={file ? URL.createObjectURL(file) : user.img}
+              alt=""
+            />
           </div>
           <div className="right">
             <form onSubmit={handleSubmit(handleClick)}>
-              <div className="formInput">
-                <label htmlFor="file">
-                  Image: <DriveFolderUploadOutlinedIcon className="icon" />
-                </label>
-                <input
-                  type="file"
-                  id="file"
-                  onChange={(e) => {
-                    setFile(e.target.files[0]);
-                    setInitialInfo((prev) => ({ ...prev, img: file }));
-                  }}
-                  style={{ display: "none" }}
-                />
-              </div>
-
+              <input
+                accept="image/*"
+                type="file"
+                id="file"
+                onChange={(e) => {
+                  setFile(e.target.files[0]);
+                  setInitialInfo((prev) => ({ ...prev, img: file }));
+                }}
+                style={{ display: "none" }}
+                ref={inputFile}
+              />
               {inputs.map((input) => (
                 <div className="formInput" key={input._id}>
                   <TextField

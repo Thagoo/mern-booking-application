@@ -1,10 +1,16 @@
 import "./Signup.scss";
 import DriveFolderUploadOutlinedIcon from "@mui/icons-material/DriveFolderUploadOutlined";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { AuthContext } from "../../context/AuthContext";
 import { userInputs } from "./formInput";
-import { Avatar, Button, Grid } from "@mui/material";
+import {
+  Avatar,
+  Backdrop,
+  Button,
+  CircularProgress,
+  Grid,
+} from "@mui/material";
 
 import { useNavigate, Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -53,6 +59,10 @@ const schema = yup.object({
 const Signup = () => {
   const [file, setFile] = useState("");
   const [info, setInfo] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [loadingCatDp, setLoadingCatDp] = useState(true);
+  const [catDp, setCatDp] = useState("");
+  const inputFile = useRef(null);
 
   const inputs = userInputs;
 
@@ -71,9 +81,9 @@ const Signup = () => {
 
   const navigate = useNavigate();
 
-  const handleClick = async (data) => {
+  const uploadImage = async () => {
     const imgdata = new FormData();
-    imgdata.append("file", file);
+    imgdata.append("file", file || catDp);
     imgdata.append("upload_preset", "upload");
     try {
       const uploadRes = await axios.post(
@@ -81,24 +91,44 @@ const Signup = () => {
         imgdata
       );
       const { url } = uploadRes.data;
+      return url;
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  const onSubmit = async (data) => {
+    setLoading(true);
+    var url;
+    if (!url) {
+      url = await uploadImage();
+    }
+
+    try {
       const newUser = {
         ...data,
+        city: data.city.toLowerCase(),
+        country: data.country.toLowerCase(),
         img: url,
       };
-      console.log(newUser);
       const response = await axios.post(`/auth/register`, newUser);
+      setLoading(false);
       //   dispatch({ type: "LOGIN_SUCCESS", payload: response.data });
-      //   navigate("/login");
+      navigate("/login");
     } catch (error) {
+      setLoading(false);
+      if (!error.response) {
+        console.log(error);
+        return;
+      }
       if (
-        error.response.data.errorMessage === "Username exists try different"
+        error?.response.data.errorMessage === "Username exists try different"
       ) {
         setError("username", {
           type: "manual",
           message: error.response.data.errorMessage,
         });
       }
-      if (error.response.data.errorMessage === "Email already exists") {
+      if (error?.response.data.errorMessage === "Email already exists") {
         setError("email", {
           type: "manual",
           message: error.response.data.errorMessage,
@@ -107,6 +137,34 @@ const Signup = () => {
     }
   };
 
+  const defaultCatDp = async () => {
+    try {
+      const res = await axios.get("/auth/randomdp", {
+        responseType: "arraybuffer",
+      });
+      if (res.status === 200) {
+        const blob = new Blob([res.data], {
+          type: res.headers["content-type"],
+        });
+        const imageFile = new File([blob], "default_cat_image.jpg", {
+          type: "image/jpeg",
+        });
+
+        setCatDp(imageFile);
+        setLoadingCatDp(false);
+        setLoading(false);
+      }
+    } catch (err) {
+      setLoadingCatDp(false);
+      setLoading(false);
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    defaultCatDp();
+  }, []);
+
   return (
     <div className="new">
       <div className="newContainer">
@@ -114,30 +172,31 @@ const Signup = () => {
           <h1>Signup</h1>
         </div>
         <div className="bottom">
-          <div className="sidebar" />
           <div className="left">
-            <img
-              src={
-                file
-                  ? URL.createObjectURL(file)
-                  : "https://thecatapi.com/api/images/get?format=src&size=small&type=jpg"
-              }
-              alt=""
-            />
+            {loadingCatDp ? (
+              <CircularProgress color="inherit" />
+            ) : (
+              <img
+                onClick={() => inputFile.current.click()}
+                src={
+                  file ? URL.createObjectURL(file) : URL.createObjectURL(catDp)
+                }
+                alt=""
+              />
+            )}
           </div>
           <div className="right">
-            <form onSubmit={handleSubmit(handleClick)}>
-              <div className="formInput">
-                <label htmlFor="file">
-                  Image: <DriveFolderUploadOutlinedIcon className="icon" />
-                </label>
-                <input
-                  type="file"
-                  id="file"
-                  onChange={(e) => setFile(e.target.files[0])}
-                  style={{ display: "none" }}
-                />
-              </div>
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <input
+                accept="image/*"
+                type="file"
+                id="file"
+                onChange={(e) => {
+                  setFile(e.target.files[0]);
+                }}
+                style={{ display: "none" }}
+                ref={inputFile}
+              />
 
               {inputs.map((input) => (
                 <div className="formInput" key={input._id}>
@@ -176,7 +235,8 @@ const Signup = () => {
                   <Button
                     type="submit"
                     variant="contained"
-                    onClick={handleClick}
+                    onClick={handleSubmit}
+                    disabled={loading}
                     sx={{
                       boxShadow: `none`,
                       backgroundColor: `#1a73e8`,

@@ -4,9 +4,13 @@
 
   .newContainer {
     flex: 6;
+  
 
     .top {
       justify-content: center;
+    }
+    .bottom {
+      height: 100%;
     }
     .top,
     .bottom {
@@ -15,16 +19,8 @@
       padding: 10px;
       margin: 20px ;
       display: flex;
-
-      .sidebar {
-        background-image: url(https://source.unsplash.com/random/?city,night);
-        background-repeat: "no-repeat";
-        background-size: "cover";
-        background-position: "center";
-        flex: 1;
-        border-radius: 10px;
-        
-      }
+  
+     
 
       h1 {
         color: #003580;
@@ -37,8 +33,8 @@
         text-align: center;
 
         img {
-          width: 100px;
-          height: 100px;
+          width: 200px;
+          height: 200px;
           border-radius: 50%;
           object-fit: cover;
         }

@@ -162,7 +162,6 @@ function Login({ setAuthenticated, setUserDetails }) {
               <Link to="/signup">
                 <Button
                   disabled={loading}
-                  type="submit"
                   sx={{
                     boxShadow: `none`,
                     textTransform: `none`,
@@ -176,7 +175,6 @@ function Login({ setAuthenticated, setUserDetails }) {
                   <Link to="/signup">
                     <Button
                       disabled={loading}
-                      type="submit"
                       sx={{
                         boxShadow: `none`,
                         textTransform: `none`,

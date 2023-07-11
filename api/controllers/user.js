@@ -12,6 +12,7 @@ export const createUser = async (req, res) => {
 };
 
 export const updateUser = async (req, res) => {
+  console.log(req.params.id);
   try {
     const updatedUser = await User.findByIdAndUpdate(
       req.params.id,

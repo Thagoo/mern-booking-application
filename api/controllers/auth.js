@@ -1,7 +1,7 @@
 import User from "#api/models/User.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-
+import axios from "axios";
 import { createError } from "#api/utils/error.js";
 
 export const register = async (req, res, next) => {
@@ -52,6 +52,24 @@ export const login = async (req, res, next) => {
       .cookie("access_token", token, { httpOnly: true })
       .status(200)
       .json({ details: { ...otherDetails, isAdmin } });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const randomDp = async (req, res, next) => {
+  try {
+    const catImageUrl =
+      "https://thecatapi.com/api/images/get?format=src&size=small&type=jpg";
+
+    const response = await axios.get(catImageUrl, {
+      responseType: "arraybuffer",
+    });
+    const contentType = response.headers["content-type"];
+    const imageData = Buffer.from(response.data, "binary");
+
+    res.set("Content-Type", contentType);
+    res.send(imageData);
   } catch (err) {
     next(err);
   }
