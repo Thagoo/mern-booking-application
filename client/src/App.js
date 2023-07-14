@@ -8,6 +8,8 @@ import Profile from "./components/profile/Profile";
 import { useContext } from "react";
 import { AuthContext } from "./context/AuthContext";
 import Navbar from "./components/navbar/Navbar";
+import ForgotPassword from "./components/forgotPassword/ForgotPassword";
+import ResetPassword from "./components/resetPassword/ResetPassword";
 
 function App() {
   const ProtectedRoute = ({ children }) => {
@@ -27,6 +29,8 @@ function App() {
         <Route path="/hotels/:id" element={<Hotel />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route
           path="/profile"
           element={

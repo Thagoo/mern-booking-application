@@ -1,9 +1,9 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import {
   Grid,
@@ -20,6 +20,12 @@ import {
   CircularProgress,
   Snackbar,
   Container,
+  FormHelperText,
+  Dialog,
+  DialogTitle,
+  DialogContentText,
+  DialogContent,
+  Alert,
 } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Visibility from "@mui/icons-material/Visibility";
@@ -27,24 +33,31 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { AuthContext } from "../../context/AuthContext";
 
 const schema = yup.object({
-  email: yup
-    .string()
-    .email("Invalid email address")
-    .required("Email is required"),
   password: yup
+    .string()
+    .min(4, "Mininum 4 characters")
+    .max(10, "Maximum 10 characters")
+    .required(),
+  confirmPassword: yup
     .string()
     .min(4, "Mininum 4 characters")
     .max(10, "Maximum 10 characters")
     .required(),
 });
 
-function Login({ setAuthenticated, setUserDetails }) {
-  const [isLoading, setIsLoading] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
-  const [successMessage, setSuccessMessage] = useState("");
+function ResetPassword() {
+  const [loading, setLoading] = useState(false);
+
+  const [dialogMessage, setDialogMessage] = useState("");
+
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const token = searchParams.get("token");
+
   const navigate = useNavigate();
 
-  const { loading, error, dispatch } = useContext(AuthContext);
   const {
     handleSubmit,
     register,
@@ -57,45 +70,40 @@ function Login({ setAuthenticated, setUserDetails }) {
   const handleShowPassword = () => setShowPassword((show) => !show);
 
   const onSubmit = async (data) => {
-    dispatch({ type: "LOGIN_START" });
-
+    setLoading(true);
+    if (data.password !== data.confirmPassword) {
+      setError("password", {
+        type: "manual",
+        message: "Passoword don't match",
+      });
+      return setLoading(false);
+    }
+    data.token = token;
     axios
-      .post("/auth/login", data, {
+      .post("/auth/reset-password", data, {
         withCredentials: true,
       })
       .then((response) => {
-        dispatch({ type: "LOGIN_SUCCESS", payload: response.data.details });
-        navigate("/");
+        setLoading(false);
+
+        if (response.status === 200) {
+          setDialogOpen(true);
+          setDialogMessage(response.data);
+        }
       })
       .catch((error) => {
-        dispatch({
-          type: "LOGIN_FAILURE",
-          payload: error.response.data.errorMessage,
-        });
-
-        if (error.response.data.errorMessage === "User not found") {
-          setError("email", {
-            type: "manual",
-            message: error.response.data.errorMessage,
-          });
-        }
-
-        if (error.response.data.errorMessage === "Wrong Password or username") {
-          setError("password", {
-            type: "manual",
-            message: error.response.data.errorMessage,
-          });
+        setLoading(false);
+        if (error.response.data.errorMessage.name === "TokenExpiredError") {
+          setDialogOpen(true);
+          setDialogMessage("Your token is expired");
         }
       });
   };
 
-  const snackbar = (
-    <Snackbar
-      open={showSuccess}
-      autoHideDuration={6000}
-      message={successMessage}
-    ></Snackbar>
-  );
+  const handleClose = () => {
+    setDialogOpen(false);
+    navigate("/");
+  };
 
   return (
     <>
@@ -117,30 +125,30 @@ function Login({ setAuthenticated, setUserDetails }) {
               alignItems: `center`,
             }}
           >
-            {" "}
-            {snackbar}
             <img className="logo" src="images/bookease.png" alt="" />
             <Typography mt={2} sx={{ fontSize: `4vh` }}>
-              Sign In
+              Reset Your Password
+            </Typography>
+            <Typography
+              mt={2}
+              sx={{
+                fontSize: `16px`,
+                fontWeight: `400`,
+                letterSpacing: `0.1`,
+                lineHeight: `1.5`,
+                px: `20px`,
+                textAlign: `center`,
+              }}
+            >
+              Please enter a new password below. Make sure to choose a strong
+              password to secure your account.
             </Typography>
             <Box component="form" onSubmit={handleSubmit(onSubmit)}>
               <TextField
                 sx={{ mt: 4 }}
                 fullWidth
-                id="email"
-                name="email"
-                label="Email"
-                autoComplete="email"
-                autoFocus
-                error={errors.email ? true : false}
-                {...register("email")}
-                helperText={errors ? errors?.email?.message : null}
-              />
-              <TextField
-                sx={{ mt: 4 }}
-                fullWidth
                 id="password"
-                label="Password"
+                label="Enter Your Password"
                 error={!!errors.password}
                 helperText={errors?.password?.message}
                 type={showPassword ? "text" : "password"}
@@ -159,31 +167,19 @@ function Login({ setAuthenticated, setUserDetails }) {
                 }}
                 autoFocus
               />
-              <Link to="/forgot-password">
-                <Button
-                  disabled={loading}
-                  sx={{
-                    boxShadow: `none`,
-                    textTransform: `none`,
-                  }}
-                >
-                  Forgot Password
-                </Button>
-              </Link>
+              <TextField
+                sx={{ mt: 4 }}
+                fullWidth
+                id="confirmPassword"
+                label="Confirm Password"
+                error={!!errors.password}
+                helperText={errors?.password?.message}
+                type={showPassword ? "text" : "password"}
+                autoComplete="confirmPassword"
+                {...register("confirmPassword")}
+                autoFocus
+              />
               <Grid container mt={4}>
-                <Grid item xs>
-                  <Link to="/signup">
-                    <Button
-                      disabled={loading}
-                      sx={{
-                        boxShadow: `none`,
-                        textTransform: `none`,
-                      }}
-                    >
-                      Create Account
-                    </Button>
-                  </Link>
-                </Grid>
                 <Grid item xs sx={{ textAlign: `right` }}>
                   <Button
                     disabled={loading}
@@ -196,10 +192,19 @@ function Login({ setAuthenticated, setUserDetails }) {
                       px: 3,
                     }}
                   >
-                    Login
+                    Submit
                   </Button>
                 </Grid>
               </Grid>
+              {dialogOpen && (
+                <Dialog onClose={handleClose} open={dialogOpen}>
+                  <DialogTitle>BookEase Account Recovery</DialogTitle>
+                  <DialogContent>
+                    <DialogContentText>{dialogMessage}</DialogContentText>
+                  </DialogContent>
+                  <Button onClick={handleClose}>Ok</Button>
+                </Dialog>
+              )}
             </Box>
           </Box>
         </Paper>
@@ -208,4 +213,4 @@ function Login({ setAuthenticated, setUserDetails }) {
   );
 }
 
-export default Login;
+export default ResetPassword;

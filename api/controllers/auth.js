@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import axios from "axios";
 import { createError } from "#api/utils/error.js";
+import nodemailer from "nodemailer";
 
 export const register = async (req, res, next) => {
   try {
@@ -54,6 +55,76 @@ export const login = async (req, res, next) => {
       .json({ details: { ...otherDetails, isAdmin } });
   } catch (err) {
     next(err);
+  }
+};
+
+export const forgotPassword = async (req, res, next) => {
+  // nodemailer transporter
+  const transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    secure: true,
+    auth: {
+      type: "login",
+      user: process.env.EMAIL,
+      pass: process.env.EMAIL_PASSWORD,
+    },
+  });
+
+  const { email } = req.body;
+  const user = await User.findOne({ email: email });
+
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
+
+  // Generate reset token and save it to the user object in the database
+  const resetToken = jwt.sign({ _id: user._id }, process.env.JWT, {
+    expiresIn: "180s",
+  });
+  user.resetToken = resetToken;
+  await user.save();
+  // Send password reset email
+  const mailOptions = {
+    from: "bookease@gmail.com",
+    to: email,
+    subject: "Password Reset",
+    text: `Dear user,\n\nTo reset your password, please click the following link: \n\nhttp://localhost:3000/reset-password?token=${resetToken}\n\nIf you didn't request this reset, please ignore this email.\n\nRegards,\nThe BookEase Team`,
+  };
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.error("Error sending password reset email:", error);
+      return res
+        .status(500)
+        .json({ message: "Failed to send password reset email" });
+    } else {
+      console.log("Password reset email sent successfully:", info.response);
+      return res.status(200).json({ message: "Password reset email sent" });
+    }
+  });
+};
+
+export const resetPassword = async (req, res, next) => {
+  const { token, password } = req.body;
+
+  try {
+    jwt.verify(token, process.env.JWT); //if the token is expired or invalid JWT creates an error
+
+    const user = await User.findOne({ resetToken: token });
+    console.log(user);
+    if (!user) {
+      return next(createError(404, "Invalid or expired reset token"));
+    } else {
+      // Update user's password
+      const salt = bcrypt.genSaltSync(10);
+      const hash = bcrypt.hashSync(password, salt);
+      user.password = hash;
+      user.resetToken = null;
+    }
+
+    return res.status(200).json("Password reset successful");
+  } catch (err) {
+    return next(createError(500, err));
   }
 };
 

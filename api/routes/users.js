@@ -18,6 +18,6 @@ router.post("/", verifyUser, createUser);
 router.put("/:id", verifyUser, updateUser);
 router.delete("/:id", verifyUser, deleteUser);
 router.get("/:id", verifyUser, getUser);
-router.get("/", getAllUsers);
+router.get("/", verifyUser, getAllUsers);
 
 export default router;
