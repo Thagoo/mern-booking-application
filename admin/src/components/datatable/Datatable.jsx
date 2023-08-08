@@ -18,9 +18,10 @@ const Datatable = ({ columns }) => {
   const { dispatch } = useContext(ViewUserContext);
 
   useEffect(() => {
+    reFetch();
     setList(data);
     dispatch({ type: "UNSET_USER" });
-  }, [data]);
+  }, [path]);
 
   const handleViewUserClick = async (params) => {
     dispatch({ type: "SET_USER", payload: params });
