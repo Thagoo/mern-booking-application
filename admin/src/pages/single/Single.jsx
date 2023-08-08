@@ -11,7 +11,7 @@ const Single = () => {
   const location = useLocation();
   const path = location.pathname.split("/")[2];
   const { user, dispatch } = useContext(ViewUserContext);
-  console.log(user);
+
   return (
     <div className="single">
       <Sidebar />
@@ -47,10 +47,6 @@ const Single = () => {
           <div className="right">
             <Chart aspect={3 / 1} title="User Spending ( Last 6 Months)" />
           </div>
-        </div>
-        <div className="bottom">
-          <h1 className="title">Last Transactions</h1>
-          <List />
         </div>
       </div>
     </div>

@@ -179,14 +179,6 @@ function Login({ setAuthenticated, setUserDetails }) {
               >
                 Sign In
               </Button>
-              <Grid container>
-                <Grid item xs>
-                  <Link>Forgot password?</Link>
-                </Grid>
-                <Grid item xs>
-                  <Link to="/signup">Don't have an account? SignUp</Link>
-                </Grid>
-              </Grid>
             </Box>
           </Box>
         </Paper>

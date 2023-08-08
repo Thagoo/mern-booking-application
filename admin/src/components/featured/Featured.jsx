@@ -4,8 +4,25 @@ import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpOutlinedIcon from "@mui/icons-material/KeyboardArrowUpOutlined";
+import useFetch from "../../hooks/useFetch";
 
 const Featured = () => {
+  const {
+    data: roomData,
+    loading: roomLoading,
+    error: roomError,
+  } = useFetch("/rooms");
+
+  const bookingsCount = roomData.reduce((count, room) => {
+    return (
+      count +
+      room.roomNumbers.reduce((roomCount, roomNumber) => {
+        return roomCount + roomNumber.unavailableDates.length;
+      }, 0)
+    );
+  }, 0);
+
+  let percentage = (bookingsCount / 150) * 100;
   return (
     <div className="featured">
       <div className="top">
@@ -14,10 +31,14 @@ const Featured = () => {
       </div>
       <div className="bottom">
         <div className="featuredChart">
-          <CircularProgressbar value={70} text={"70%"} strokeWidth={5} />
+          <CircularProgressbar
+            value={percentage}
+            text={parseInt(percentage) + "%"}
+            strokeWidth={5}
+          />
         </div>
-        <p className="title">Total sales made today</p>
-        <p className="amount">₹420</p>
+        <p className="title">Total Rooms booked</p>
+        <p className="amount">{bookingsCount}</p>
         <p className="desc">
           Previous transactions processing. Last payments may not be included.
         </p>

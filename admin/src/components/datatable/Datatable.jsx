@@ -42,21 +42,23 @@ const Datatable = ({ columns }) => {
       renderCell: (params) => {
         return (
           <div className="cellAction">
-            <Link
-              to={`/users/${params.row._id}`}
-              style={{ textDecoration: "none" }}
-            >
-              <Button
-                size="small"
-                sx={{
-                  boxShadow: `none`,
-                  textTransform: `none`,
-                }}
-                onClick={(e) => handleViewUserClick(params.row)}
+            {params.row.username && (
+              <Link
+                to={`/users/${params.row._id}`}
+                style={{ textDecoration: "none" }}
               >
-                View
-              </Button>
-            </Link>
+                <Button
+                  size="small"
+                  sx={{
+                    boxShadow: `none`,
+                    textTransform: `none`,
+                  }}
+                  onClick={(e) => handleViewUserClick(params.row)}
+                >
+                  View
+                </Button>
+              </Link>
+            )}
             <Button
               sx={{
                 boxShadow: `none`,
