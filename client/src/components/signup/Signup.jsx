@@ -112,8 +112,11 @@ const Signup = () => {
       };
       const response = await axios.post(`/auth/register`, newUser);
       setLoading(false);
+      if (response.status === 200) {
+        alert("Registration successfull");
+        navigate("/login");
+      }
       //   dispatch({ type: "LOGIN_SUCCESS", payload: response.data });
-      navigate("/login");
     } catch (error) {
       setLoading(false);
       if (!error.response) {

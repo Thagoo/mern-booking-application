@@ -13,6 +13,7 @@ export const createHotel = async (req, res) => {
 };
 
 export const updateHotel = async (req, res) => {
+  req.body.city = req.body.city.toLowerCase();
   try {
     const updatedHotel = await Hotel.findByIdAndUpdate(
       req.params.id,

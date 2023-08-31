@@ -75,10 +75,7 @@ const Sidebar = () => {
             <SettingsSystemDaydreamOutlinedIcon className="icon" />
             <span>System Health</span>
           </li>
-          <li>
-            <PsychologyOutlinedIcon className="icon" />
-            <span>Logs</span>
-          </li>
+
           <li>
             <SettingsApplicationsIcon className="icon" />
             <span>Settings</span>
